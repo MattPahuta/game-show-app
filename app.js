@@ -3,13 +3,23 @@ const phrase = document.querySelector('#phrase');
 const phraseUL = document.querySelector('#phrase ul');
 const startButton = document.querySelector('.btn__reset');
 let missed = 0;
-const phrases = ["May the force be with you", "Never tell me the odds", "I solemnly swear I am up to no good", "Never say never again", "Life is trying things to see if they work", "The way to get started is to quit talking and begin doing"];
+const phrases = [
+  "may the force be with you", 
+  "never tell me the odds", 
+  "i solemnly swear i am up to no good", 
+  "never say never again", 
+  "beam me up"];
 
-
+// listen for the start of the game
+startButton.addEventListener('click', () => {
+  const overlay = document.querySelector('#overlay');
+  overlay.style.display = 'none';
+  addPhraseToDisplay(getRandomPhraseAsArray(phrases)); // call the addPhraseToDisplay function
+});
 
 // return a random phrase from an array
 const getRandomPhraseAsArray = arr => {
-  const randomIndex = Math.floor(Math.random() * arr.length)
+  const randomIndex = Math.floor(Math.random() * (arr.length))
   return arr[randomIndex];
 }
 
@@ -37,7 +47,19 @@ const addPhraseToDisplay = arr => {
 
 // check if a letter is in the phrase
 const checkLetter = button => {
-  const listItems = 
+  let listItems = document.querySelectorAll('.letter');
+  listItems = Array.from(listItems);
+  let match = null;
+
+  for (let i = 0; i < listItems.length; i++) {
+    if (listItems[i].textContent === button.textContent) {
+      listItems[i].classList.add('show');
+      match = button.textContent;
+    } 
+    
+  }
+  console.log(`The value of match is: ${match}`)
+  return match;
 }
 
 // check if the game's been won or lost
@@ -45,14 +67,15 @@ const checkWin = () => {
 
 }
 
-// listen for the start of the game
-startButton.addEventListener('click', () => {
-  const overlay = document.querySelector('#overlay');
-  overlay.style.display = 'none';
-});
+
 
 // listen for the oncreen keyboard to be clicked
 qwerty.addEventListener('click', e => {
+  console.log(e.target.textContent);
 
+  // filter out non-button clicks or buttons already with 'chosen' class
+  e.target.classList.add('chosen'); // add chosen class to pressed button
+  console.log(e.target)
+  checkLetter(e.target);
 });
 

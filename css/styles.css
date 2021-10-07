@@ -104,6 +104,10 @@ button {
   justify-content: center;
 }
 
+.keyrow button {
+  cursor: pointer;
+}
+
 .chosen {
   background: var(--color-neutral);
   border-radius: 5px;
