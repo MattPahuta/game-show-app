@@ -6,16 +6,12 @@ let missed = 0;
 const phrases = [
   "may the force be with you", 
   "never tell me the odds", 
-  "i solemnly swear i am up to no good", 
+  "coding is tough", 
   "never say never again", 
-  "beam me up"];
+  "beam me up",
+  "luv to code"
+];
 
-// listen for the start of the game
-startButton.addEventListener('click', () => {
-  const overlay = document.querySelector('#overlay');
-  overlay.style.display = 'none';
-  addPhraseToDisplay(getRandomPhraseAsArray(phrases)); // call the addPhraseToDisplay function
-});
 
 // return a random phrase from an array
 const getRandomPhraseAsArray = arr => {
@@ -23,7 +19,9 @@ const getRandomPhraseAsArray = arr => {
   return arr[randomIndex];
 }
 
-getRandomPhraseAsArray(phrases);
+
+
+// getRandomPhraseAsArray(phrases);
 
 
 
@@ -43,39 +41,104 @@ const addPhraseToDisplay = arr => {
   }
 
 }
+  addPhraseToDisplay(getRandomPhraseAsArray(phrases)); // call the addPhraseToDisplay function
 
+// const checkLetter = (button) => {
+//   let buttonContent = button.textContent;
+//   let match = null;
+//   let letterClass = document.getElementsByClassName('letter');
+//   //loop through the letter class from last step
+//   for (let i = 0; i < letterClass.length; i++) {
+//     if (buttonContent === letterClass[i].textContent) {
+//         match = button;
+//         letterClass[i].classList.add('show');
+//         }
+//     }
+//     return match;
+//   }
 
 // check if a letter is in the phrase
 const checkLetter = button => {
   let listItems = document.querySelectorAll('.letter');
-  listItems = Array.from(listItems);
   let match = null;
-
-  for (let i = 0; i < listItems.length; i++) {
-    if (listItems[i].textContent === button.textContent) {
-      listItems[i].classList.add('show');
+  // const scoreBoardList = document.querySelector('#scoreboard ol')
+  const hearts = document.querySelectorAll('.tries');
+  // for (let i = 0; i < listItems.length; i++) {
+  //   if (listItems[i].textContent === button.textContent) {
+  //     listItems[i].classList.add('show');
+  //     match = button.textContent;
+  //   } 
+    
+  // }
+  // forEach version of above for loop:
+  listItems.forEach(li => {
+    if (li.textContent === button.textContent) {
+      li.classList.add('show');
       match = button.textContent;
     } 
-    
+
+  })
+  // if no match, increment missed counter and remove a heart
+  if (!match) { // if match is falsey (null)
+    missed += 1; // increment counter
+    // scoreBoardList.lastElementChild.remove(); // remove heart
+    const heart = hearts[missed-1].querySelectorAll('img')[0]; // swap the heart image
+    heart.src='images/lostHeart.png';
   }
-  console.log(`The value of match is: ${match}`)
+
+  console.log(`hello from checkLetter function. The value of match is: ${match}`) // testing
   return match;
 }
 
 // check if the game's been won or lost
 const checkWin = () => {
+  const letters = document.querySelectorAll('.letter');
+  console.log('letters length: ', letters.length)
+  const shownLetters = document.querySelectorAll('.show');
+  const headline = document.querySelector('.title');
+  console.log('shownLetters length: ', shownLetters.length);
+  if (letters.length === shownLetters.length) {
+    overlay.style.display = 'flex';
+    overlay.className = 'win';
+    headline.innerText = 'You won the game!!!';
+  }
+  if (missed > 4) {
+    overlay.style.display = 'flex';
+    overlay.className = 'lose';
+    headline.innerText = 'Bummer. You lost.';
+  }
 
 }
 
+// *** Event Listeners *** //
+// *********************** //
 
+
+// listen for the start of the game
+startButton.addEventListener('click', () => {
+  // const overlay = document.querySelector('#overlay');
+  overlay.style.display = 'none';
+  // addPhraseToDisplay(getRandomPhraseAsArray(phrases)); // call the addPhraseToDisplay function
+});
 
 // listen for the oncreen keyboard to be clicked
 qwerty.addEventListener('click', e => {
   console.log(e.target.textContent);
-
+  console.log(e.target.tagName);
   // filter out non-button clicks or buttons already with 'chosen' class
-  e.target.classList.add('chosen'); // add chosen class to pressed button
-  console.log(e.target)
-  checkLetter(e.target);
+  // make sure clicked target is tagName === 'BUTTON'
+  // make sure clicked button doesn't already have 'chosen' class
+  if (e.target.tagName === 'BUTTON' && !e.target.className.includes('chosen')) {
+    const button = e.target;
+    checkLetter(button) // call checkLetter function
+    button.classList.add('chosen'); // add chosen class to pressed button
+
+  }
+  else { // testing only, not needed in production
+    console.log('invalid click');
+  } 
+
+  console.log('hello from qwerty listener: ', e.target)
+  checkWin();
 });
 
